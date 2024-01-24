@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const slugify = require('slugify');
 const jobSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -15,14 +16,14 @@ const jobSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        validate: [validator.email, 'Please add a valid email address']
+        validate: [validator.isEmail, 'Please add a valid email address']
 
     },
     address: {
         type: String,
         required: [true, 'Please add an address']
     },
-    companyName: {
+    company: {
         type: String,
         required: [true, 'Please add a company name']
     },
@@ -53,7 +54,7 @@ const jobSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: {
-            values: ['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'],
+            values: ['High School', 'Associate', 'Bachelors', 'Master', 'Doctorate'],
             message: 'Please select correct options for minimum education'
         }
     },
@@ -66,6 +67,7 @@ const jobSchema = new mongoose.Schema({
         required: true,
         enum: {
             values: [
+                'No Experience',
                 '0 - 2 YRS',
                 '2-5 YRS',
                 '5-10 YRS',
@@ -85,5 +87,18 @@ const jobSchema = new mongoose.Schema({
     lastDate: {
         type: Date,
         default: new Date().setDate(new Date().getDate() + 30)
+    },
+    applicantApplied: {
+        type: [Object],
+        select: false
     }
 });
+
+//creating job slug 
+jobSchema.pre('save', function (next) {
+    //creating slug before saving
+    this.slug = slugify(this.title, { lower: true });
+    next();
+})
+
+module.exports = mongoose.model('job', jobSchema);
