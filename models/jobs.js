@@ -46,7 +46,7 @@ const jobSchema = new mongoose.Schema({
     },
     industry: {
         type: [String],
-        required: true,
+        required: [true, 'Please add a industry'],
         enum: {
             values: [
                 'Business',
@@ -61,7 +61,7 @@ const jobSchema = new mongoose.Schema({
     },
     jobType: {
         type: String,
-        required: true,
+        required: [true, 'Please enter job type'],
         enum: {
             values: ['Full-time', 'Part-time', 'Contract', 'Internship'],
             message: 'Please select correct job type'
@@ -69,7 +69,7 @@ const jobSchema = new mongoose.Schema({
     },
     minEducation: {
         type: String,
-        required: true,
+        required: [true, 'Please enter min education'],
         enum: {
             values: ['High School', 'Associate', 'Bachelors', 'Master', 'Doctorate'],
             message: 'Please select correct options for minimum education'
@@ -81,7 +81,7 @@ const jobSchema = new mongoose.Schema({
     },
     experience: {
         type: String,
-        required: true,
+        required: [true, 'Please enter experience'],
         enum: {
             values: [
                 'No Experience',
@@ -123,13 +123,13 @@ jobSchema.pre('save', async function (next) {
     //creating slug before saving
     const loc = await geoCoder.geocode(this.address);
     this.location = {
-        type : 'Point',
-        coordinates : [loc[0].longitude, loc[0].latitude],
-        formattedAddress : loc[0].formattedAddress,
-        city : loc[0].city,
-        state : loc[0].stateCode,
-        zipcode : loc[0].zipcode,
-        country : loc[0].countryCode
+        type: 'Point',
+        coordinates: [loc[0].longitude, loc[0].latitude],
+        formattedAddress: loc[0].formattedAddress,
+        city: loc[0].city,
+        state: loc[0].stateCode,
+        zipcode: loc[0].zipcode,
+        country: loc[0].countryCode
 
     }
     next();

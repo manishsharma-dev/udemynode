@@ -2,8 +2,9 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 const dotenv = require('dotenv');
-
-
+const connectDatabase = require("./config/database");
+const errorMiddleware = require('./middlewares/error');
+const ErrorHandler = require('./utils/errorhandler');
 //Handling uncaught exceptions
 
 process.on('uncaughtException', err => {
@@ -12,16 +13,18 @@ process.on('uncaughtException', err => {
     process.exit(1);
 })
 
-const connectDatabase = require("./config/database");
-
 dotenv.config({ path: './config/config.env' });
 
 connectDatabase(); // connect DB
-const errorMiddleware = require('./middlewares/error');
+
 
 const jobs = require('./routes/jobs');
 
 app.use('/api/v1', jobs);
+
+app.all('*', (req, res, next) => {
+    next(new ErrorHandler(`${req.originalUrl} route not found`, 404));
+})
 
 app.use(errorMiddleware) //middleware to handle error
 
@@ -32,7 +35,7 @@ const server = app.listen(port || 3000, () => {
 
 process.on('unhandledRejection', err => {
     console.log(`Error: ${err.message}`);
-    console.log('Shutting down the server due to handled promise rejection');
+    console.log('Shutting down the server due to unhandled promise rejection');
     server.close(() => {
         process.exit(1);
     });
