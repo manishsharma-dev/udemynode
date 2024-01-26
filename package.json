@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app",
     "start:dev": "nodemon app",
-    "start:prod": "SET NODE_ENV=production nodemon app.js"
+    "start:prod": "export NODE_ENV=production && nodemon app.js"
   },
   "keywords": [],
   "author": "",
