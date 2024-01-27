@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
-app.use(express.json());
+
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 const connectDatabase = require("./config/database");
 const errorMiddleware = require('./middlewares/error');
 const ErrorHandler = require('./utils/errorhandler');
-//Handling uncaught exceptions
 
+
+
+//Handling uncaught exceptions
 process.on('uncaughtException', err => {
     console.log(`Error : ${err.message}`);
     console.log(`Shutting down server due to uncaught exception`);
@@ -17,6 +20,9 @@ dotenv.config({ path: './config/config.env' });
 
 connectDatabase(); // connect DB
 
+app.use(express.json());
+
+app.use(cookieParser());     //Set cookie parser
 
 const jobs = require('./routes/jobs');
 const auth = require('./routes/auth');

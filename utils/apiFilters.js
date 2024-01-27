@@ -44,6 +44,7 @@ class APIFilters {
             const qu = this.queryStr.q.split('-').join(' ');
             this.query = this.query.find({ $text: { $search: "\"" + qu + "\"" } })
         }
+        return this;
     }
     pagination() {
         const page = this.queryStr = parseInt(this.query.page, 10) || 1;
