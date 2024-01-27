@@ -8,7 +8,7 @@ class APIFilters {
         const queryCopy = { ...this.queryStr };
 
         // removing fields from query
-        const removeFields = ['sort'];
+        const removeFields = ['sort','fields'];
         removeFields.forEach(element => delete queryCopy[element]);
 
         // Advance filte using : lt,lte,gt,gte
@@ -24,6 +24,17 @@ class APIFilters {
             this.query = this.query.sort(sortBy);
         } else {
             this.query = this.query.sort('-postingDate');
+        }
+        return this;
+    }
+
+    limitFields(){
+        if(this.queryStr.fields){
+            const fields = this.queryStr.fields.split(',').join(' ');
+            this.query = this.query.select(fields);
+        }
+        else{
+            this.query = this.query.select('-__v');
         }
         return this;
     }
