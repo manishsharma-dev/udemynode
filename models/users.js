@@ -1,37 +1,52 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const slugify = require('slugify');
-
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const userSchema = new mongoose.Schema({
-    name : {
-        type : 'string',
-        required : [true, 'Please enter your name']
+    name: {
+        type: String,
+        required: [true, 'Please enter your name']
     },
-    email : {
-        type : 'string',
-        required : [true, 'Please enter your email address'],
-        unique : true,
-        validate : [validator.isEmail, 'Please enter a valid email address']
+    email: {
+        type: String,
+        required: [true, 'Please enter your email address'],
+        unique: true,
+        validate: [validator.isEmail, 'Please enter valid email address']
     },
-    role : {
-        type : 'string',
-        enum : {
-            values : ['user', 'employer'],
-            messages : ['Please select correct role']
+    role: {
+        type: String,
+        enum: {
+            values: ['user', 'employer'],
+            message: 'Please select correct role'
         },
-        default : 'user',
-        required : [true, 'Please select correct role']
+        default: 'user'
     },
-    password : {
-        type : 'string',
-        required : [true, 'Please enter password'],
-        minlength : [8, 'Your password must be atleast 8 characters'],
-        select : false,        
+    password: {
+        type: String,
+        required: [true, 'Please enter password for your account'],
+        minlength: [8, 'Your password must be at least 8 characters long'],
+        select: false
     },
-    createdAt : {
+    createdAt: {
         type: Date,
-        default : Date.now
+        default: Date.now
     },
-    resetPasswordToken : string,
-    resetPasswordExpire : Date
-})
+    resetPasswordToken: String,
+    resetPasswordExpire: Date
+});
+
+//Encrypting password before saving
+userSchema.pre('save', async function (req, res, next) {
+    this.password = await bcrypt.hash(this.password, 10);
+});
+
+//Return JSON Web Token
+
+userSchema.methods.getJwtToken = function(){
+   return jwt.sign({id : this._id},
+        process.env.JWT_SECRET,
+        {expiresIn : process.env.JWT_EXPIRES_IN})
+}
+
+
+module.exports = mongoose.model('User', userSchema);

@@ -19,8 +19,10 @@ connectDatabase(); // connect DB
 
 
 const jobs = require('./routes/jobs');
+const auth = require('./routes/auth');
 
 app.use('/api/v1', jobs);
+app.use('/api/v1', auth);
 
 app.all('*', (req, res, next) => {
     next(new ErrorHandler(`${req.originalUrl} route not found`, 404));
