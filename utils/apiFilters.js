@@ -8,7 +8,7 @@ class APIFilters {
         const queryCopy = { ...this.queryStr };
 
         // removing fields from query
-        const removeFields = ['sort','fields'];
+        const removeFields = ['sort', 'fields', 'q', 'page', 'limit'];
         removeFields.forEach(element => delete queryCopy[element]);
 
         // Advance filte using : lt,lte,gt,gte
@@ -28,14 +28,28 @@ class APIFilters {
         return this;
     }
 
-    limitFields(){
-        if(this.queryStr.fields){
+    limitFields() {
+        if (this.queryStr.fields) {
             const fields = this.queryStr.fields.split(',').join(' ');
             this.query = this.query.select(fields);
         }
-        else{
+        else {
             this.query = this.query.select('-__v');
         }
+        return this;
+    }
+
+    searchByQuery() {
+        if (this.queryStr.q) {
+            const qu = this.queryStr.q.split('-').join(' ');
+            this.query = this.query.find({ $text: { $search: "\"" + qu + "\"" } })
+        }
+    }
+    pagination() {
+        const page = this.queryStr = parseInt(this.query.page, 10) || 1;
+        const limit = parseInt(this.queryStr.limit, 10) | 10;
+        const skipResults = (page - 1) * limit;
+        this.query = this.query.skip(skipResults).limit(limit);
         return this;
     }
 }

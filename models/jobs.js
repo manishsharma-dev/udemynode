@@ -99,7 +99,7 @@ const jobSchema = new mongoose.Schema({
     },
     postingDate: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     },
     lastDate: {
         type: Date,
