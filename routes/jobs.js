@@ -5,10 +5,10 @@ const router = express.Router();
 
 const { getJobs, newJob, getJobsInRadius, updateJob, deleteJob, getJob, jobStats } = require('../controllers/jobsController');
 
-const { isAuthenticated } = require('../middlewares/auth');
+const { isAuthenticated, authoriseRoles } = require('../middlewares/auth');
 
 
-router.route('/jobs').get(isAuthenticated, getJobs);
+router.route('/jobs').get(isAuthenticated,authoriseRoles('employer','admin'), getJobs);
 
 router.route('/jobs/:zipcode/:distance').get(getJobsInRadius);
 
